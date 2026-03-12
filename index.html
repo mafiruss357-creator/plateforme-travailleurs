@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+<meta charset="UTF-8">
+<title>Plateforme Travailleurs</title>
+
+<style>
+
+body{
+font-family:Arial;
+margin:0;
+background-image:url("https://images.unsplash.com/photo-1503387762-592deb58ef4e");
+background-size:cover;
+background-position:center;
+}
+
+.overlay{
+background:rgba(0,0,0,0.6);
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+}
+
+.container{
+background:white;
+padding:30px;
+border-radius:10px;
+width:350px;
+text-align:center;
+}
+
+button{
+width:100%;
+padding:12px;
+margin-top:10px;
+border:none;
+background:#27ae60;
+color:white;
+font-size:16px;
+border-radius:5px;
+}
+
+input{
+width:100%;
+padding:10px;
+margin-top:10px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="overlay">
+
+<div class="container" id="choix">
+
+<h2>Bienvenue</h2>
+
+<button onclick="choisir('travailleur')">
+Je suis un homme de métier
+</button>
+
+<button onclick="choisir('employeur')">
+Je suis un employeur
+</button>
+
+</div>
+
+
+<div class="container" id="formulaire" style="display:none">
+
+<h2>Inscription</h2>
+
+<input type="text" id="nom" placeholder="Nom">
+
+<input type="text" id="telephone" placeholder="Téléphone">
+
+<input type="text" id="metier" placeholder="Métier">
+
+<p id="gps">Localisation en cours...</p>
+
+<button onclick="envoyer()">Envoyer</button>
+
+</div>
+
+</div>
+
+<script>
+
+let typeUtilisateur=""
+let latitude=""
+let longitude=""
+
+function choisir(type){
+
+typeUtilisateur=type
+
+document.getElementById("choix").style.display="none"
+document.getElementById("formulaire").style.display="block"
+
+navigator.geolocation.getCurrentPosition(function(position){
+
+latitude=position.coords.latitude
+longitude=position.coords.longitude
+
+document.getElementById("gps").innerHTML="Position capturée ✔"
+
+})
+
+}
+
+function envoyer(){
+
+let nom=document.getElementById("nom").value
+let tel=document.getElementById("telephone").value
+let metier=document.getElementById("metier").value
+
+let data={
+type:typeUtilisateur,
+nom:nom,
+telephone:tel,
+metier:metier,
+latitude:latitude,
+longitude:longitude
+}
+
+fetch("https://script.google.com/macros/s/AKfycbxoaJ9lCCc8x8P0UEoH_qpYzLxt5vA8Wje34pqR8OFlv1nDuExRtit7Rqj5i8u1BXpi/exec",{
+
+method:"POST",
+body:JSON.stringify(data)
+
+})
+
+alert("Inscription envoyée")
+
+}
+
+</script>
+
+</body>
+
+</html>
