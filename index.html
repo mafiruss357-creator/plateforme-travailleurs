@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Plateforme Travailleurs</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  height: 100vh;
+  background-image: url("https://images.unsplash.com/photo-1503387762-592deb58ef4e");
+  background-size: cover;
+  background-position: center;
+}
+.overlay {
+  background: rgba(0,0,0,0.6);
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.container {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  width: 350px;
+  text-align: center;
+}
+button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border: none;
+  background: #27ae60;
+  color: white;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+button:hover {
+  background: #2ecc71;
+}
+input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+}
+#gps {
+  margin-top: 10px;
+  font-size: 14px;
+  color: green;
+}
+#loading {
+  display: none;
+  margin-top: 15px;
+}
+</style>
+</head>
+<body>
+
+<div class="overlay">
+
+<!-- Choix utilisateur -->
+<div class="container" id="choix">
+<h2>Bienvenue</h2>
+<button onclick="choisir('travailleur')">Je suis un homme de métier</button>
+<button onclick="choisir('employeur')">Je suis un employeur</button>
+</div>
+
+<!-- Formulaire -->
+<div class="container" id="formulaire" style="display:none">
+<h2>Inscription</h2>
+<input type="text" id="nom" placeholder="Nom">
+<input type="text" id="telephone" placeholder="Téléphone">
+<input type="text" id="metier" placeholder="Métier / Poste">
+<p id="gps">Localisation en cours...</p>
+<div id="loading">Envoi en cours...</div>
+<button onclick="envoyer()">Envoyer</button>
+</div>
+
+<!-- Page de remerciement -->
+<div class="container" id="merci" style="display:none">
+<h2>Merci pour votre inscription !</h2>
+<p>Rejoignez notre groupe WhatsApp :</p>
+<a id="whatsappLink" href="#" target="_blank">
+<button>Rejoindre le groupe</button>
+</a>
+<button onclick="recommencer()">Remplir à nouveau le formulaire</button>
+</div>
+
+</div>
+
+<script>
+let typeUtilisateur = "";
+let latitude = "";
+let longitude = "";
+
+function choisir(type){
+  typeUtilisateur = type;
+  document.getElementById("choix").style.display = "none";
+  document.getElementById("formulaire").style.display = "block";
+
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(function(position){
+      latitude = position.coords.latitude;
+      longitude = position.coords.longitude;
+      document.getElementById("gps").innerHTML = "Position capturée ✔";
+    }, function(error){
+      document.getElementById("gps").innerHTML = "Impossible de récupérer la position";
+      latitude = "";
+      longitude = "";
+    });
+  } else {
+    document.getElementById("gps").innerHTML = "Géolocalisation non supportée";
+  }
+}
+
+function envoyer(){
+  let nom = document.getElementById("nom").value.trim();
+  let tel = document.getElementById("telephone").value.trim();
+  let metier = document.getElementById("metier").value.trim();
+
+  if(!nom || !tel || !metier){
+    alert("Veuillez remplir tous les champs !");
+    return;
+  }
+
+  document.getElementById("loading").style.display = "block";
+
+  let data = {
+    data: [{
+      Date: new Date(),
+      Type: typeUtilisateur,
+      Nom: nom,
+      Téléphone: tel,
+      Métier: metier,
+      Latitude: latitude,
+      Longitude: longitude
+    }]
+  };
+
+  fetch("https://sheetdb.io/api/v1/x7rqgbros239h", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  })
+  .then(res => res.json())
+  .then(res => {
+    document.getElementById("formulaire").style.display = "none";
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("merci").style.display = "block";
+    
+    // Définir le lien WhatsApp selon le type
+    if(typeUtilisateur === "travailleur"){
+      document.getElementById("whatsappLink").href = "https://chat.whatsapp.com/BRjefJUJbEAGWKECEnlYHL";
+    } else {
+      document.getElementById("whatsappLink").href = "https://chat.whatsapp.com/Ik5AxQYNO9O07xNKPAmE53";
+    }
+  })
+  .catch(err => {
+    alert("Erreur lors de l'envoi : " + err);
+    console.error(err);
+    document.getElementById("loading").style.display = "none";
+  });
+}
+
+function recommencer(){
+  document.getElementById("merci").style.display = "none";
+  document.getElementById("formulaire").style.display = "block";
+  document.getElementById("nom").value = "";
+  document.getElementById("telephone").value = "";
+  document.getElementById("metier").value = "";
+  document.getElementById("gps").innerHTML = "Localisation en cours...";
+}
+</script>
+
+</body>
+</html>
