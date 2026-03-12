@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Plateforme Travailleurs</title>
+<style>
+body {margin:0; font-family: Arial; background: #f0f0f0;}
+nav {background: #27ae60; color: white; padding: 10px; display:flex; justify-content:space-around;}
+nav button {background:none; border:none; color:white; font-size:16px; cursor:pointer;}
+nav button:hover{text-decoration:underline;}
+
+/* Sections */
+section {display:none; height:100vh; background-size:cover; background-position:center; padding:30px; color:white; transition:0.5s;}
+section .overlay{background:rgba(0,0,0,0.6); height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;}
+
+/* Conteneur formulaire */
+.container{background:rgba(255,255,255,0.9); padding:20px; border-radius:10px; width:350px; text-align:center; color:black;}
+input, select, textarea{width:100%; padding:10px; margin-top:10px;}
+button.submit{width:100%; padding:12px; margin-top:10px; border:none; background:#27ae60; color:white; font-size:16px; border-radius:5px; cursor:pointer; transition:0.3s;}
+button.submit:hover{background:#2ecc71;}
+
+/* Accueil boutons */
+#accueil button{
+  background: linear-gradient(45deg, #ff512f, #dd2476);
+  color:white;
+  border:none;
+  padding:15px 25px;
+  margin:10px;
+  font-size:18px;
+  border-radius:8px;
+  cursor:pointer;
+  transition:0.4s;
+}
+#accueil button:hover{
+  transform: scale(1.1);
+  box-shadow:0 0 15px rgba(255,255,255,0.6);
+}
+
+/* Loader et résultats */
+#loading, #loadingE{display:none; margin-top:15px;}
+#resultats{display:none; margin-top:20px; background:white; padding:10px; border-radius:10px; color:black;}
+table{width:100%; border-collapse:collapse;}
+td,th{border:1px solid #ccc; padding:5px; text-align:center;}
+a.whalink{display:block; margin-top:10px; text-decoration:none; color:#27ae60; font-weight:bold;}
+</style>
+</head>
+<body>
+
+<!-- Menu -->
+<nav>
+<button onclick="afficherPage('accueil')">Accueil</button>
+<button onclick="afficherPage('inscriptionTravailleur')">Travailleur</button>
+<button onclick="afficherPage('inscriptionEmployeur')">Employeur</button>
+<button onclick="afficherPage('info')">Info</button>
+</nav>
+
+<!-- Accueil -->
+<section id="accueil" style="display:block; background-image:url('https://images.unsplash.com/photo-1503387762-592deb58ef4e');">
+<div class="overlay">
+<h1>Bienvenue sur la Plateforme Travailleurs</h1>
+<p>Choisissez votre section :</p>
+<button onclick="afficherPage('inscriptionTravailleur')">Je suis un travailleur</button>
+<button onclick="afficherPage('inscriptionEmployeur')">Je suis un employeur</button>
+</div>
+</section>
+
+<!-- Travailleur -->
+<section id="inscriptionTravailleur" style="background-image:url('https://images.unsplash.com/photo-1581092333132-3383eb4d083d?auto=format&fit=crop&w=1600&q=80');">
+<div class="overlay">
+<h2>Inscription Travailleur</h2>
+<div class="container">
+<input type="text" id="nom" placeholder="Nom">
+<input type="text" id="telephone" placeholder="Téléphone">
+<select id="metier">
+  <option value="">--Choisir le métier--</option>
+  <optgroup label="Construction">
+    <option>Maçon</option><option>Carreleur</option><option>Plombier</option>
+    <option>Électricien</option><option>Peintre</option><option>Menuisier</option>
+  </optgroup>
+  <optgroup label="Informatique">
+    <option>Développeur Web</option><option>Développeur Mobile</option>
+    <option>Technicien Réseau</option><option>Graphiste</option><option>Administrateur Système</option>
+  </optgroup>
+</select>
+<input type="text" id="ville" placeholder="Ville">
+<input type="text" id="quartier" placeholder="Quartier">
+<input type="file" id="photoTravailleur" accept="image/*">
+<p id="gps">Localisation en cours...</p>
+<div id="loading">Envoi en cours...</div>
+<button class="submit" onclick="envoyer('travailleur')">Envoyer</button>
+<div id="merciT" style="display:none">
+<h3>Merci pour votre inscription !</h3>
+<a class="whalink" href="https://chat.whatsapp.com/BRjefJUJbEAGWKECEnlYHL" target="_blank">Rejoindre le groupe WhatsApp Travailleurs</a>
+<button onclick="afficherPage('inscriptionTravailleur')">Remplir un nouveau formulaire</button>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Employeur -->
+<section id="inscriptionEmployeur" style="background-image:url('https://images.unsplash.com/photo-1556761175-5973dc0f32e7');">
+<div class="overlay">
+<h2>Inscription Employeur</h2>
+<div class="container">
+<input type="text" id="nomE" placeholder="Nom Entreprise">
+<input type="text" id="telephoneE" placeholder="Téléphone">
+<select id="metierE">
+  <option value="">--Choisir le métier recherché--</option>
+  <optgroup label="Construction">
+    <option>Maçon</option><option>Carreleur</option><option>Plombier</option>
+    <option>Électricien</option><option>Peintre</option><option>Menuisier</option>
+  </optgroup>
+  <optgroup label="Informatique">
+    <option>Développeur Web</option><option>Développeur Mobile</option>
+    <option>Technicien Réseau</option><option>Graphiste</option><option>Administrateur Système</option>
+  </optgroup>
+</select>
+<input type="number" id="nbTravailleurs" placeholder="Nombre de travailleurs">
+<input type="text" id="villeE" placeholder="Ville">
+<input type="text" id="quartierE" placeholder="Quartier">
+<textarea id="description" placeholder="Description du chantier"></textarea>
+<input type="file" id="photoEmployeur" accept="image/*">
+<p id="gpsE">Localisation en cours...</p>
+<div id="loadingE">Envoi en cours...</div>
+<button class="submit" onclick="envoyer('employeur')">Envoyer</button>
+<div id="merciE" style="display:none">
+<h3>Merci pour votre demande !</h3>
+<a class="whalink" href="https://chat.whatsapp.com/Ik5AxQYNO9O07xNKPAmE53" target="_blank">Rejoindre le groupe WhatsApp Employeurs</a>
+<button onclick="afficherPage('inscriptionEmployeur')">Remplir un nouveau formulaire</button>
+</div>
+<div id="resultats"></div>
+</div>
+</div>
+</section>
+
+<!-- Info -->
+<section id="info" style="background-image:url('https://images.unsplash.com/photo-1519389950473-47ba0277781c');">
+<div class="overlay">
+<h2>Informations</h2>
+<p>Cette plateforme connecte travailleurs et employeurs facilement.</p>
+<p>Après inscription, rejoignez le groupe WhatsApp approprié.</p>
+</div>
+</section>
+
+<script>
+const sheetDBurl="https://sheetdb.io/api/v1/x7rqgbros239h";
+
+// Gestion pages
+function afficherPage(id){
+  document.querySelectorAll('section').forEach(s=>s.style.display='none');
+  document.getElementById(id).style.display='block';
+}
+
+// Géolocalisation
+let latitude='', longitude='', latitudeE='', longitudeE='';
+navigator.geolocation.getCurrentPosition(p=>{
+  latitude=p.coords.latitude; longitude=p.coords.longitude;
+  latitudeE=p.coords.latitude; longitudeE=p.coords.longitude;
+  document.getElementById("gps").innerHTML="Position capturée ✔";
+  document.getElementById("gpsE").innerHTML="Position capturée ✔";
+});
+
+// Fonction envoyer
+function envoyer(type){
+  if(type==='travailleur'){
+    const data={
+      Type:"travailleur",
+      Nom:document.getElementById("nom").value,
+      Telephone:document.getElementById("telephone").value,
+      Métier:document.getElementById("metier").value,
+      Ville:document.getElementById("ville").value,
+      Quartier:document.getElementById("quartier").value,
+      Latitude:latitude,
+      Longitude:longitude
+    };
+    document.getElementById("loading").style.display="block";
+    fetch(sheetDBurl,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({data})
+    })
+    .then(()=>{document.getElementById("loading").style.display="none";
+                document.getElementById("merciT").style.display="block";})
+    .catch(err=>{alert("Erreur lors de l'envoi, vérifier la connexion"); console.log(err);});
+  }
+  else if(type==='employeur'){
+    const data={
+      Type:"employeur",
+      Nom:document.getElementById("nomE").value,
+      Telephone:document.getElementById("telephoneE").value,
+      Métier:document.getElementById("metierE").value,
+      Nombre:document.getElementById("nbTravailleurs").value,
+      Ville:document.getElementById("villeE").value,
+      Quartier:document.getElementById("quartierE").value,
+      Description:document.getElementById("description").value,
+      Latitude:latitudeE,
+      Longitude:longitudeE
+    };
+    document.getElementById("loadingE").style.display="block";
+    fetch(sheetDBurl,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({data})
+    })
+    .then(()=>{document.getElementById("loadingE").style.display="none";
+                document.getElementById("merciE").style.display="block";})
+    .catch(err=>{alert("Erreur lors de l'envoi, vérifier la connexion"); console.log(err);});
+  }
+}
+</script>
+</body>
+</html>
